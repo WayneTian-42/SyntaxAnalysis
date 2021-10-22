@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <iomanip>
 
 class Praser
 {
@@ -44,34 +45,48 @@ void Praser::generatePredictTable()
         for (std::string &str : gra)
         {
             char alpha = str[0];
+            if (alpha == '#')
+                continue;
             if (terminal.find(alpha) != terminal.end() && find(first[non].begin(), first[non].end(), alpha) != first[non].end())
             {
                 predictTable[symbol[non]][symbol[alpha]] = tmp + non + " -> " + str;
                 continue;
             }
-            char now = findTerminal(non, alpha);
-            predictTable[symbol[non]][symbol[now]] = tmp + non + " -> " + str;
-            // tmp.clear();
-            // 简单处理， 没有考虑E->A|num这种情况, 想递归调用
-            // while (terminal.find(alpha) != terminal.end())
-            //     alpha = 
+            for (char beta : first[alpha])
+            {
+                if (terminal.find(beta) != terminal.end() && find(first[non].begin(), first[non].end(), beta) != first[non].end())
+                {
+                    predictTable[symbol[non]][symbol[beta]] = tmp + non + " -> " + str;
+                    continue;
+                }
+            }
+            
+            // char now = findTerminal(non, alpha);
+            // predictTable[symbol[non]][symbol[now]] = tmp + non + " -> " + str;
         }
         if (find(first[non].begin(), first[non].end(), '#') != first[non].end())
         {
             for (char alpha : follow[non])
-                predictTable[symbol[non]][symbol[non]] = non + " -> " + alpha;
+                predictTable[symbol[non]][symbol[alpha]] = tmp + non + " -> " + "#";
         }
     }
 
     for (auto &col : predictTable)
     {
-        std::cout << "\t";
         for (auto &row : col)
         {
             if (!row.empty())
-                std::cout << row << " ";
+            {
+                std::cout << row[0] << "\t";
+                break;
+            }
+        }
+        for (auto &row : col)
+        {
+            if (!row.empty())
+                std::cout << std::setw(15) << std::left <<  row;
             else
-                std::cout << "\t\t";
+                std::cout << std::setw(15) << std::left << " ";
         }
         std::cout << std::endl;
     }
@@ -111,9 +126,11 @@ void Praser::test()
     symbol['('] = 0;
     symbol[')'] = 1;
     symbol['a'] = 2;
-    symbol['$'] = 3;
+    symbol[','] = 3;
+    symbol['$'] = 4;
 
-    std::cout << "\t" << "(\t\t" << ")\t\t" << "a\t\t" << "$\t\t" << std::endl;
+    std::cout << "\t" <<  std::setw(15) << std::left << "(" << std::setw(15) << std::left << ")" << std::setw(15) << std::left << "a" 
+             << std::setw(15) << std::left << "," << std::setw(15) << std::left << "$" << std::endl;
 
     terminal.insert('(');
     terminal.insert(')');
