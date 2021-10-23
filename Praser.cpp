@@ -9,8 +9,8 @@ class Praser
 {
 public:
     Praser();
-    void generatePredictTable();
-    char findTerminal(const char start, const char now);
+    void generatePredictTable(); // 构造预测分析表
+    // char findTerminal(const char start, const char now);
     void test();
 
 private:
@@ -29,12 +29,12 @@ int main()
     std::cout << std::endl;
 }
 
-Praser::Praser()
-{
-    predictTable.resize(nonterminal.size());
-    for (int i = 0; i < nonterminal.size(); i++)
-        predictTable[i].resize(terminal.size());
-}
+// Praser::Praser()
+// {
+//     predictTable.resize(nonterminal.size());
+//     for (int i = 0; i < nonterminal.size(); i++)
+//         predictTable[i].resize(terminal.size());
+// }
 
 void Praser::generatePredictTable()
 {
@@ -45,8 +45,9 @@ void Praser::generatePredictTable()
         for (std::string &str : gra)
         {
             char alpha = str[0];
-            if (alpha == '#')
+            if (alpha == '#') // epsilon不在此处考虑
                 continue;
+            // 终结符且之前未出现过
             if (terminal.find(alpha) != terminal.end() && find(first[non].begin(), first[non].end(), alpha) != first[non].end())
             {
                 predictTable[symbol[non]][symbol[alpha]] = tmp + non + " -> " + str;
@@ -54,6 +55,7 @@ void Praser::generatePredictTable()
             }
             for (char beta : first[alpha])
             {
+                // 非终结符则寻找其first集
                 if (terminal.find(beta) != terminal.end() && find(first[non].begin(), first[non].end(), beta) != first[non].end())
                 {
                     predictTable[symbol[non]][symbol[beta]] = tmp + non + " -> " + str;
@@ -64,13 +66,14 @@ void Praser::generatePredictTable()
             // char now = findTerminal(non, alpha);
             // predictTable[symbol[non]][symbol[now]] = tmp + non + " -> " + str;
         }
+        // 判断epsilon
         if (find(first[non].begin(), first[non].end(), '#') != first[non].end())
         {
             for (char alpha : follow[non])
                 predictTable[symbol[non]][symbol[alpha]] = tmp + non + " -> " + "#";
         }
     }
-
+    // 输出
     for (auto &col : predictTable)
     {
         for (auto &row : col)
@@ -92,21 +95,22 @@ void Praser::generatePredictTable()
     }
 }
 
-char Praser::findTerminal(const char start, const char now)
-{
-    std::vector<std::string> gra = grammar[now];
-    for (std::string &str : gra)
-    {
-        char alpha = str[0];
-        while (terminal.find(alpha) == terminal.end() || find(first[start].begin(), first[start].end(), alpha) == first[start].end())
-            return findTerminal(start, alpha);
-        if (predictTable[symbol[start]][symbol[alpha]].empty())
-            return alpha;
-    }
-}
+// char Praser::findTerminal(const char start, const char now)
+// {
+//     std::vector<std::string> gra = grammar[now];
+//     for (std::string &str : gra)
+//     {
+//         char alpha = str[0];
+//         while (terminal.find(alpha) == terminal.end() || find(first[start].begin(), first[start].end(), alpha) == first[start].end())
+//             return findTerminal(start, alpha);
+//         if (predictTable[symbol[start]][symbol[alpha]].empty())
+//             return alpha;
+//     }
+// }
 
 void Praser::test()
 {
+    // 习题4.4
     grammar['S'] = {"(L)", "a"};
     grammar['L'] = {"SM"};
     grammar['M'] = {",SM", "#"};
