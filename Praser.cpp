@@ -1,4 +1,3 @@
-#define DEBUG
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -11,18 +10,17 @@
 class Praser
 {
 public:
-    // Praser();
     void readFromFile(const std::string &fileName); // 从文件中获取文法
     void caculateFirstSet();
     void caculaleFollowSet();
     void generatePredictTable(); // 构造预测分析表
     void predictAnalysis(const std::string &input);
-    // char findTerminal(const char start, const char now);
     void test();
 
 private:
     void getFirstSet(const char non);
     void getFollowSet(const char non);
+    inline std::string cutStr(const std::string &str, int pos);
 
 private:
     char start; // 文法开始符号
@@ -35,37 +33,26 @@ private:
 
 int main(int argc, char *argv[])
 {
-    // if (argc != 2)
-    // {
-    //     std::runtime_error("Error: Need 2 parameters\n");
-    // }
+    if (argc != 2)
+        std::runtime_error("Error: Need 2 parameters\n");
     Praser p;
-    p.readFromFile("test1.in");
+    p.readFromFile(argv[1]);
     p.caculateFirstSet();
     p.caculaleFollowSet();
-    // p.test();
     p.generatePredictTable();
-    std::string tset;
-    std::cin >> tset;
-    // (i(i(n))(i))
-    p.predictAnalysis(tset);
-    std::cout << std::endl;
+
+    std::string input;
+    std::cout << "Please enter the symbols:" << std::endl;
+    std::cin >> input;
+    p.predictAnalysis(input);
 }
 
-// Praser::Praser()
-// {
-//     predictTable.resize(nonterminal.size());
-//     for (int i = 0; i < nonterminal.size(); i++)
-//         predictTable[i].resize(terminal.size());
-// }
 void Praser::readFromFile(const std::string &fileName)
 {
     std::fstream fileIn;
     fileIn.open(fileName);
     if (!fileIn)
-    {
         throw std::runtime_error("Error: No such file\n");
-    }
     std::string generator;
     std::set<char> allSymbol; // 记录所有符号
     int ter = 0, non = 0;
@@ -108,6 +95,15 @@ void Praser::caculateFirstSet()
         first[ter].insert(ter);
     for (char non : nonterminal)
         getFirstSet(non);
+    std::cout << "First Set" << std::endl;
+    for (char non : nonterminal)
+    {
+        std::cout << non << "  ";
+        for (char alpha : first[non])
+            std::cout << alpha << " ";
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 void Praser::getFirstSet(const char non)
 {
@@ -147,12 +143,22 @@ void Praser::caculaleFollowSet()
 {
     for (char non : nonterminal)
         getFollowSet(non);
-    for (auto &iter : preFollow)
-        for (char non : iter.second)
-            follow[non].insert(follow[iter.first].begin(), follow[iter.first].end());
-    for (auto &iter : preFollow)
-        for (char non : iter.second)
-            follow[non].insert(follow[iter.first].begin(), follow[iter.first].end());
+    // 重复执行多次，更新follow集
+    for (int i = 0; i < preFollow.size(); i++)
+    {
+        for (auto &iter : preFollow)
+            for (char non : iter.second)
+                follow[non].insert(follow[iter.first].begin(), follow[iter.first].end());
+    }
+    std::cout << "Follow Set" << std::endl;
+    for (char non : nonterminal)
+    {
+        std::cout << non << "  ";
+        for (char alpha : follow[non])
+            std::cout << alpha << " ";
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 void Praser::getFollowSet(const char non)
 {
@@ -167,12 +173,6 @@ void Praser::getFollowSet(const char non)
                 follow[gra[i - 1]].insert(first[gra[i]].begin(), first[gra[i]].end());
                 follow[gra[i - 1]].erase('#');
             }
-            // else
-            // {
-            //     if (gra[i] != '#')
-            //         follow[gra[i - 1]].insert(gra[i]);
-            //     i += 2;
-            // }
         }
         for (int i = gra.size() - 1; i >= 0; i--)
         {
@@ -218,9 +218,6 @@ void Praser::generatePredictTable()
                     continue;
                 }
             }
-            
-            // char now = findTerminal(non, alpha);
-            // predictTable[symbol[non]][symbol[now]] = tmp + non + " -> " + str;
         }
         // 判断epsilon
         if (first[non].find('#') != first[non].end())
@@ -230,6 +227,7 @@ void Praser::generatePredictTable()
         }
     }
     // 输出
+    std::cout << "Predict Analysis Table\n";
     std::cout << "\t";
     for (int i = 0; i < terminal.size(); i++)
     {
@@ -262,29 +260,21 @@ void Praser::generatePredictTable()
         }
         std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
-
-// char Praser::findTerminal(const char start, const char now)
-// {
-//     std::vector<std::string> gra = grammar[now];
-//     for (std::string &str : gra)
-//     {
-//         char alpha = str[0];
-//         while (terminal.find(alpha) == terminal.end() || find(first[start].begin(), first[start].end(), alpha) == first[start].end())
-//             return findTerminal(start, alpha);
-//         if (predictTable[symbol[start]][symbol[alpha]].empty())
-//             return alpha;
-//     }
-// }
 
 void Praser::predictAnalysis(const std::string &input)
 {
     std::string target = input + "$";
     std::stack<char> stk;
+    std::string analysisStk;
+    analysisStk = analysisStk + "$" + start;
     stk.push('$');
-    stk.push('E');
+    stk.push(start);
     int ptr = 0;
 
+    std::cout << "\n" << std::setw(15) << std::left << "Stack" << std::setw(15) << std::left << "Input"
+              << std::setw(15) << std::left << "Output" << std::endl;
     while (!stk.empty())
     {
         char snow = stk.top(), inow = target[ptr];
@@ -293,13 +283,17 @@ void Praser::predictAnalysis(const std::string &input)
             if (snow == inow)
             {
                 stk.pop();
+                std::cout << std::setw(15) << std::left << analysisStk;
+                analysisStk.pop_back();
+                std::cout << std::setw(15) << std::left << cutStr(target, ptr);
                 ptr++;
+                std::cout << "accept " << snow << std::endl;
             }
             else if (snow == '#')
                 stk.pop();
             else
             {
-                std::cout << "error" << snow << " " << inow << std::endl;
+                std::cout << "error " << snow << " " << inow << std::endl;
                 return;
             }
         }
@@ -308,87 +302,32 @@ void Praser::predictAnalysis(const std::string &input)
             if (!predictTable[symbol[snow]][symbol[inow]].empty())
             {
                 stk.pop();
+                std::cout << std::setw(15) << std::left << analysisStk;
+                analysisStk.pop_back();
                 std::string tmp = predictTable[symbol[snow]][symbol[inow]];
                 for (int i = tmp.size() - 1; i >= 5; i--)
                 {
                     stk.push(tmp[i]);
+                    if (tmp[i] != '#')
+                        analysisStk += tmp[i];
                 }
-                std::cout << tmp << std::endl;
+                std::cout << std::setw(15) << std::left << cutStr(target, ptr);
+                std::cout << std::setw(15) << std::left << tmp << std::endl;
             }
             else
             {
-                std::cout << "error" << snow << " " << inow << std::endl;
+                std::cout << "error " << snow << " " << inow << std::endl;
                 return;
             }
         }
     }
-    std::cout << "accept\n";
+    std::cout << "accept all successfully\n";
 }
 
-# ifdef DEBUG
-void Praser::test()
+inline std::string Praser::cutStr(const std::string &str, int pos)
 {
-    // 习题4.4
-    grammar['E'] = {"A", "B"};
-    grammar['A'] = {"n", "i"};
-    grammar['B'] = {"(L)"};
-    grammar['L'] = {"EM"};
-    grammar['M'] = {"EM", "#"};
-
-    first['E'] = {'(', 'n', 'i'};
-    first['A'] = {'n', 'i'};
-    first['B'] = {'('};
-    first['L'] = {'(', 'n', 'i'};
-    first['M'] = {'(', 'n', 'i', '#'};
-
-    follow['E'] = {'$', '(', ')', 'n', 'i'};
-    follow['A'] = {'$', '(', ')', 'n', 'i'};
-    follow['B'] = {'$', '(', ')', 'n', 'i'};
-    follow['L'] = {')'};
-    follow['M'] = {')'};
-
-    symbol['E'] = 0;
-    symbol['A'] = 1;
-    symbol['B'] = 2;
-    symbol['L'] = 3;
-    symbol['M'] = 4;
-
-    symbol['('] = 0;
-    symbol[')'] = 1;
-    symbol['n'] = 2;
-    symbol['i'] = 3;
-    symbol['$'] = 4;
-
-    // std::cout << "\t" <<  std::setw(15) << std::left << "(" << std::setw(15) << std::left << ")" << std::setw(15) << std::left << "n" 
-    //          << std::setw(15) << std::left << "i" << std::setw(15) << std::left << "$" << std::endl;
-
-    terminal.insert('(');
-    terminal.insert(')');
-    terminal.insert('n');
-    terminal.insert('#');
-    terminal.insert('i');
-
-    std::cout << "\t";
-    for (int i = 0; i < terminal.size(); i++)
-    {
-        for (char ter : terminal)
-        {
-            if (ter == '#')
-                continue;
-            if (symbol[ter] == i)
-                std::cout << std::setw(15) << std::left << ter;
-        }
-    }
-    std::cout << std::endl;
-
-    nonterminal.insert('E');
-    nonterminal.insert('A');
-    nonterminal.insert('B');
-    nonterminal.insert('L');
-    nonterminal.insert('M');
-
-    predictTable.resize(nonterminal.size());
-    for (int i = 0; i < nonterminal.size(); i++)
-        predictTable[i].resize(terminal.size());
+    std::string tmp;
+    for (int i = pos; i < str.size(); i++)
+        tmp += str[i];
+    return tmp;
 }
-#endif

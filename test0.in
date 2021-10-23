@@ -1,0 +1,10 @@
+E -> TK
+T -> FU
+F -> (E)
+F -> n
+K -> +TK
+K -> -TK
+K -> #
+U -> *FU
+U -> /FU
+U -> #
