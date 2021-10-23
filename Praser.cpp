@@ -4,12 +4,14 @@
 #include <unordered_map>
 #include <set>
 #include <iomanip>
+#include <stack>
 
 class Praser
 {
 public:
-    Praser();
+    // Praser();
     void generatePredictTable(); // 构造预测分析表
+    void predictAnalysis(const std::string &input);
     // char findTerminal(const char start, const char now);
     void test();
 
@@ -26,6 +28,9 @@ int main()
     Praser p;
     p.test();
     p.generatePredictTable();
+    std::string tset;
+    std::cin >> tset;
+    p.predictAnalysis(tset);
     std::cout << std::endl;
 }
 
@@ -108,41 +113,112 @@ void Praser::generatePredictTable()
 //     }
 // }
 
+void Praser::predictAnalysis(const std::string &input)
+{
+    std::string target = input + "$";
+    std::stack<char> stk;
+    stk.push('$');
+    stk.push('E');
+    int ptr = 0;
+
+    while (!stk.empty())
+    {
+        char snow = stk.top(), inow = target[ptr];
+        if (terminal.find(snow) != terminal.end() || snow == '$')
+        {
+            if (snow == inow)
+            {
+                stk.pop();
+                ptr++;
+            }
+            else if (snow == '#')
+                stk.pop();
+            else
+            {
+                std::cout << "error" << snow << " " << inow << std::endl;
+                return;
+            }
+        }
+        else
+        {
+            if (!predictTable[symbol[snow]][symbol[inow]].empty())
+            {
+                stk.pop();
+                std::string tmp = predictTable[symbol[snow]][symbol[inow]];
+                for (int i = tmp.size() - 1; i >= 5; i--)
+                {
+                    stk.push(tmp[i]);
+                }
+                std::cout << tmp << std::endl;
+            }
+            else
+            {
+                std::cout << "error" << snow << " " << inow << std::endl;
+                return;
+            }
+        }
+    }
+    std::cout << "accept\n";
+}
+
 void Praser::test()
 {
     // 习题4.4
-    grammar['S'] = {"(L)", "a"};
-    grammar['L'] = {"SM"};
-    grammar['M'] = {",SM", "#"};
+    grammar['E'] = {"A", "B"};
+    grammar['A'] = {"n", "i"};
+    grammar['B'] = {"(L)"};
+    grammar['L'] = {"EM"};
+    grammar['M'] = {"EM", "#"};
 
-    first['S'] = {'(', 'a'};
-    first['L'] = {'(', 'a'};
-    first['M'] = {',', '#'};
+    first['E'] = {'(', 'n', 'i'};
+    first['A'] = {'n', 'i'};
+    first['B'] = {'('};
+    first['L'] = {'(', 'n', 'i'};
+    first['M'] = {'(', 'n', 'i', '#'};
 
-    follow['S'] = {'$', ',', ')'};
+    follow['E'] = {'$', '(', ')', 'n', 'i'};
+    follow['A'] = {'$', '(', ')', 'n', 'i'};
+    follow['B'] = {'$', '(', ')', 'n', 'i'};
     follow['L'] = {')'};
     follow['M'] = {')'};
 
-    symbol['S'] = 0;
-    symbol['L'] = 1;
-    symbol['M'] = 2;
+    symbol['E'] = 0;
+    symbol['A'] = 1;
+    symbol['B'] = 2;
+    symbol['L'] = 3;
+    symbol['M'] = 4;
 
     symbol['('] = 0;
     symbol[')'] = 1;
-    symbol['a'] = 2;
-    symbol[','] = 3;
+    symbol['n'] = 2;
+    symbol['i'] = 3;
     symbol['$'] = 4;
 
-    std::cout << "\t" <<  std::setw(15) << std::left << "(" << std::setw(15) << std::left << ")" << std::setw(15) << std::left << "a" 
-             << std::setw(15) << std::left << "," << std::setw(15) << std::left << "$" << std::endl;
+    // std::cout << "\t" <<  std::setw(15) << std::left << "(" << std::setw(15) << std::left << ")" << std::setw(15) << std::left << "n" 
+    //          << std::setw(15) << std::left << "i" << std::setw(15) << std::left << "$" << std::endl;
 
     terminal.insert('(');
     terminal.insert(')');
-    terminal.insert('a');
+    terminal.insert('n');
     terminal.insert('#');
-    terminal.insert(',');
+    terminal.insert('i');
 
-    nonterminal.insert('S');
+    std::cout << "\t";
+    for (int i = 0; i < terminal.size(); i++)
+    {
+        for (char ter : terminal)
+        {
+            if (ter == '#')
+                continue;
+            if (symbol[ter] == i)
+                std::cout << std::setw(15) << std::left << ter;
+        }
+    }
+    std::cout << std::endl;
+
+    nonterminal.insert('E');
+    nonterminal.insert('A');
+    nonterminal.insert('B');
     nonterminal.insert('L');
     nonterminal.insert('M');
 
