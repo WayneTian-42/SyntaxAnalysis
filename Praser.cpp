@@ -1,3 +1,4 @@
+#define DEBUG
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -5,31 +6,45 @@
 #include <set>
 #include <iomanip>
 #include <stack>
+#include <fstream>
 
 class Praser
 {
 public:
     // Praser();
+    void readFromFile(const std::string &fileName); // 从文件中获取文法
+    void caculateFirstSet();
     void generatePredictTable(); // 构造预测分析表
     void predictAnalysis(const std::string &input);
     // char findTerminal(const char start, const char now);
     void test();
 
 private:
+    void getFirstSet(const char non);
+    void getFollowSet(const char non);
+
+private:
     std::set<char> terminal, nonterminal;
-    std::unordered_map<char, std::vector<char>> first, follow;
+    std::unordered_map<char, std::set<char>> first, follow;
     std::unordered_map<char, std::vector<std::string>> grammar;
     std::vector<std::vector<std::string>> predictTable;
     std::unordered_map<char, int> symbol;
 };
 
-int main()
+int main(int argc, char *argv[])
 {
+    // if (argc != 2)
+    // {
+    //     std::runtime_error("Error: Need 2 parameters\n");
+    // }
     Praser p;
-    p.test();
-    p.generatePredictTable();
+    p.readFromFile("test1.in");
+    p.caculateFirstSet();
+    // p.test();
+    // p.generatePredictTable();
     std::string tset;
     std::cin >> tset;
+    // (i(i(n))(i))
     p.predictAnalysis(tset);
     std::cout << std::endl;
 }
@@ -40,6 +55,85 @@ int main()
 //     for (int i = 0; i < nonterminal.size(); i++)
 //         predictTable[i].resize(terminal.size());
 // }
+void Praser::readFromFile(const std::string &fileName)
+{
+    std::fstream fileIn;
+    fileIn.open(fileName);
+    if (!fileIn)
+    {
+        throw std::runtime_error("Error: No such file\n");
+    }
+    std::string generator;
+    std::set<char> allSymbol; // 记录所有符号
+    while (!fileIn.eof())
+    {
+        getline(fileIn, generator);
+        int ptr = 0;
+        nonterminal.insert(generator[0]);
+        for (ptr = 5; ptr < generator.size(); ptr++)
+        {
+            std::string gra;
+            while (ptr < generator.size() && generator[ptr] != ' ' && generator[ptr] != '|')
+            {
+                gra += generator[ptr];
+                allSymbol.insert(generator[ptr++]);
+            }
+            if (!gra.empty())
+                grammar[generator[0]].push_back(gra);
+        }
+    }
+    // 添加终结符
+    for (char alpha : allSymbol)
+    {
+        if (nonterminal.find(alpha) != nonterminal.end())
+            continue;
+        terminal.insert(alpha);
+    }
+}
+
+void Praser::caculateFirstSet()
+{
+    for (char non : nonterminal)
+        getFirstSet(non);
+}
+void Praser::getFirstSet(const char non)
+{
+    for (auto &gra : grammar[non])
+    {
+        if (terminal.find(gra[0]) != terminal.end())
+            first[non].insert(gra[0]);
+        else
+        {
+            bool flg = true; // 标记该产生式是否全为非终结符
+            for (char alpha : gra)
+            {
+                if (nonterminal.find(alpha) == nonterminal.end())
+                {
+                    flg = false;
+                    break;
+                }
+            }
+            if (flg)
+            {
+                getFirstSet(gra[0]);
+                first[non].insert(first[gra[0]].begin(), first[gra[0]].end());
+            }
+            else
+            {
+                for (char alpha : gra)
+                {
+                    getFirstSet(alpha);
+                    first[non].insert(first[alpha].begin(), first[alpha].end());
+                }
+            }
+        }
+    }
+}
+
+void Praser::getFollowSet(const char non)
+{
+
+}
 
 void Praser::generatePredictTable()
 {
@@ -53,7 +147,7 @@ void Praser::generatePredictTable()
             if (alpha == '#') // epsilon不在此处考虑
                 continue;
             // 终结符且之前未出现过
-            if (terminal.find(alpha) != terminal.end() && find(first[non].begin(), first[non].end(), alpha) != first[non].end())
+            if (terminal.find(alpha) != terminal.end() && first[non].find(alpha) != first[non].end())
             {
                 predictTable[symbol[non]][symbol[alpha]] = tmp + non + " -> " + str;
                 continue;
@@ -61,7 +155,7 @@ void Praser::generatePredictTable()
             for (char beta : first[alpha])
             {
                 // 非终结符则寻找其first集
-                if (terminal.find(beta) != terminal.end() && find(first[non].begin(), first[non].end(), beta) != first[non].end())
+                if (terminal.find(beta) != terminal.end() && first[non].find(beta) != first[non].end())
                 {
                     predictTable[symbol[non]][symbol[beta]] = tmp + non + " -> " + str;
                     continue;
@@ -72,7 +166,7 @@ void Praser::generatePredictTable()
             // predictTable[symbol[non]][symbol[now]] = tmp + non + " -> " + str;
         }
         // 判断epsilon
-        if (find(first[non].begin(), first[non].end(), '#') != first[non].end())
+        if (first[non].find('#') != first[non].end())
         {
             for (char alpha : follow[non])
                 predictTable[symbol[non]][symbol[alpha]] = tmp + non + " -> " + "#";
@@ -161,6 +255,7 @@ void Praser::predictAnalysis(const std::string &input)
     std::cout << "accept\n";
 }
 
+# ifdef DEBUG
 void Praser::test()
 {
     // 习题4.4
@@ -226,3 +321,4 @@ void Praser::test()
     for (int i = 0; i < nonterminal.size(); i++)
         predictTable[i].resize(terminal.size());
 }
+#endif
