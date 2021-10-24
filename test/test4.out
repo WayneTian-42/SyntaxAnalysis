@@ -1,0 +1,44 @@
+First Set
+E  ( i 
+F  ( i 
+H  # + 
+R  # * 
+T  ( i 
+
+Follow Set
+E  $ ) 
+F  $ ) * + 
+H  $ ) 
+R  $ ) + 
+T  $ ) + 
+
+Predict Analysis Table
+        (              )              *              +              i              $              
+E       E -> TH                                                     E -> TH                       
+H                      H -> #                        H -> +TH                      H -> #         
+T       T -> FR                                                     T -> FR                       
+R                      R -> #         R -> *FR       R -> #                        R -> #         
+F       F -> (E)                                                    F -> i                        
+
+Please enter the symbols:
+i+i*i
+
+Stack               Input               Output              
+$E                  i+i*i$              E -> TH             
+$HT                 i+i*i$              T -> FR             
+$HRF                i+i*i$              F -> i              
+$HRi                i+i*i$              accept i
+$HR                 +i*i$               R -> #              
+$H                  +i*i$               H -> +TH            
+$HT+                +i*i$               accept +
+$HT                 i*i$                T -> FR             
+$HRF                i*i$                F -> i              
+$HRi                i*i$                accept i
+$HR                 *i$                 R -> *FR            
+$HRF*               *i$                 accept *
+$HRF                i$                  F -> i              
+$HRi                i$                  accept i
+$HR                 $                   R -> #              
+$H                  $                   H -> #              
+$                   $                   accept $
+accept all successfully

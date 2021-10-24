@@ -1,0 +1,73 @@
+First Set
+A  d m 
+B  ( 
+E  ( d m 
+L  ( d m 
+T  # , 
+
+Follow Set
+A  $ ) , 
+B  $ ) , 
+E  $ ) , 
+L  ) 
+T  ) 
+
+Predict Analysis Table
+        (              )              ,              d              m              $              
+E       E -> B                                       E -> A         E -> A                        
+A                                                    A -> d         A -> m                        
+B       B -> (L)                                                                                  
+L       L -> ET                                      L -> ET        L -> ET                       
+T                      T -> #         T -> ,L                                                     
+
+Please enter the symbols:
+(d,(d,(m)),(d))
+
+Stack               Input               Output              
+$E                  (d,(d,(m)),(d))$    E -> B              
+$B                  (d,(d,(m)),(d))$    B -> (L)            
+$)L(                (d,(d,(m)),(d))$    accept (
+$)L                 d,(d,(m)),(d))$     L -> ET             
+$)TE                d,(d,(m)),(d))$     E -> A              
+$)TA                d,(d,(m)),(d))$     A -> d              
+$)Td                d,(d,(m)),(d))$     accept d
+$)T                 ,(d,(m)),(d))$      T -> ,L             
+$)L,                ,(d,(m)),(d))$      accept ,
+$)L                 (d,(m)),(d))$       L -> ET             
+$)TE                (d,(m)),(d))$       E -> B              
+$)TB                (d,(m)),(d))$       B -> (L)            
+$)T)L(              (d,(m)),(d))$       accept (
+$)T)L               d,(m)),(d))$        L -> ET             
+$)T)TE              d,(m)),(d))$        E -> A              
+$)T)TA              d,(m)),(d))$        A -> d              
+$)T)Td              d,(m)),(d))$        accept d
+$)T)T               ,(m)),(d))$         T -> ,L             
+$)T)L,              ,(m)),(d))$         accept ,
+$)T)L               (m)),(d))$          L -> ET             
+$)T)TE              (m)),(d))$          E -> B              
+$)T)TB              (m)),(d))$          B -> (L)            
+$)T)T)L(            (m)),(d))$          accept (
+$)T)T)L             m)),(d))$           L -> ET             
+$)T)T)TE            m)),(d))$           E -> A              
+$)T)T)TA            m)),(d))$           A -> m              
+$)T)T)Tm            m)),(d))$           accept m
+$)T)T)T             )),(d))$            T -> #              
+$)T)T)              )),(d))$            accept )
+$)T)T               ),(d))$             T -> #              
+$)T)                ),(d))$             accept )
+$)T                 ,(d))$              T -> ,L             
+$)L,                ,(d))$              accept ,
+$)L                 (d))$               L -> ET             
+$)TE                (d))$               E -> B              
+$)TB                (d))$               B -> (L)            
+$)T)L(              (d))$               accept (
+$)T)L               d))$                L -> ET             
+$)T)TE              d))$                E -> A              
+$)T)TA              d))$                A -> d              
+$)T)Td              d))$                accept d
+$)T)T               ))$                 T -> #              
+$)T)                ))$                 accept )
+$)T                 )$                  T -> #              
+$)                  )$                  accept )
+$                   $                   accept $
+accept all successfully

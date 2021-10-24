@@ -1,0 +1,81 @@
+First Set
+E  ( n 
+F  ( n 
+K  # + - 
+T  ( n 
+U  # * / 
+
+Follow Set
+E  $ ) 
+F  $ ) * + - / 
+K  $ ) 
+T  $ ) + - 
+U  $ ) + - 
+
+Predict Analysis Table
+        (              )              *              +              -              /              n              $              
+E       E -> TK                                                                                   E -> TK                       
+T       T -> FU                                                                                   T -> FU                       
+F       F -> (E)                                                                                  F -> n                        
+K                      K -> #                        K -> +TK       K -> -TK                                     K -> #         
+U                      U -> #         U -> *FU       U -> #         U -> #         U -> /FU                      U -> #         
+
+Please enter the symbols:
+n+(n*(n-(n/n)+n))
+
+Stack               Input               Output              
+$E                  n+(n*(n-(n/n)+n))$  E -> TK             
+$KT                 n+(n*(n-(n/n)+n))$  T -> FU             
+$KUF                n+(n*(n-(n/n)+n))$  F -> n              
+$KUn                n+(n*(n-(n/n)+n))$  accept n
+$KU                 +(n*(n-(n/n)+n))$   U -> #              
+$K                  +(n*(n-(n/n)+n))$   K -> +TK            
+$KT+                +(n*(n-(n/n)+n))$   accept +
+$KT                 (n*(n-(n/n)+n))$    T -> FU             
+$KUF                (n*(n-(n/n)+n))$    F -> (E)            
+$KU)E(              (n*(n-(n/n)+n))$    accept (
+$KU)E               n*(n-(n/n)+n))$     E -> TK             
+$KU)KT              n*(n-(n/n)+n))$     T -> FU             
+$KU)KUF             n*(n-(n/n)+n))$     F -> n              
+$KU)KUn             n*(n-(n/n)+n))$     accept n
+$KU)KU              *(n-(n/n)+n))$      U -> *FU            
+$KU)KUF*            *(n-(n/n)+n))$      accept *
+$KU)KUF             (n-(n/n)+n))$       F -> (E)            
+$KU)KU)E(           (n-(n/n)+n))$       accept (
+$KU)KU)E            n-(n/n)+n))$        E -> TK             
+$KU)KU)KT           n-(n/n)+n))$        T -> FU             
+$KU)KU)KUF          n-(n/n)+n))$        F -> n              
+$KU)KU)KUn          n-(n/n)+n))$        accept n
+$KU)KU)KU           -(n/n)+n))$         U -> #              
+$KU)KU)K            -(n/n)+n))$         K -> -TK            
+$KU)KU)KT-          -(n/n)+n))$         accept -
+$KU)KU)KT           (n/n)+n))$          T -> FU             
+$KU)KU)KUF          (n/n)+n))$          F -> (E)            
+$KU)KU)KU)E(        (n/n)+n))$          accept (
+$KU)KU)KU)E         n/n)+n))$           E -> TK             
+$KU)KU)KU)KT        n/n)+n))$           T -> FU             
+$KU)KU)KU)KUF       n/n)+n))$           F -> n              
+$KU)KU)KU)KUn       n/n)+n))$           accept n
+$KU)KU)KU)KU        /n)+n))$            U -> /FU            
+$KU)KU)KU)KUF/      /n)+n))$            accept /
+$KU)KU)KU)KUF       n)+n))$             F -> n              
+$KU)KU)KU)KUn       n)+n))$             accept n
+$KU)KU)KU)KU        )+n))$              U -> #              
+$KU)KU)KU)K         )+n))$              K -> #              
+$KU)KU)KU)          )+n))$              accept )
+$KU)KU)KU           +n))$               U -> #              
+$KU)KU)K            +n))$               K -> +TK            
+$KU)KU)KT+          +n))$               accept +
+$KU)KU)KT           n))$                T -> FU             
+$KU)KU)KUF          n))$                F -> n              
+$KU)KU)KUn          n))$                accept n
+$KU)KU)KU           ))$                 U -> #              
+$KU)KU)K            ))$                 K -> #              
+$KU)KU)             ))$                 accept )
+$KU)KU              )$                  U -> #              
+$KU)K               )$                  K -> #              
+$KU)                )$                  accept )
+$KU                 $                   U -> #              
+$K                  $                   K -> #              
+$                   $                   accept $
+accept all successfully

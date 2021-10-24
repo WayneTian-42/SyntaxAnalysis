@@ -1,0 +1,39 @@
+First Set
+D  f i 
+R  # , 
+T  f i 
+V  d 
+
+Follow Set
+D  $ 
+R  $ 
+T  d 
+V  $ 
+
+Predict Analysis Table
+        ,              d              f              i              $              
+D                                     D -> TV        D -> TV                       
+T                                     T -> f         T -> i                        
+V                      V -> dR                                                     
+R       R -> ,V                                                     R -> #         
+
+Please enter the symbols:
+id,d,d
+
+Stack               Input               Output              
+$D                  id,d,d$             D -> TV             
+$VT                 id,d,d$             T -> i              
+$Vi                 id,d,d$             accept i
+$V                  d,d,d$              V -> dR             
+$Rd                 d,d,d$              accept d
+$R                  ,d,d$               R -> ,V             
+$V,                 ,d,d$               accept ,
+$V                  d,d$                V -> dR             
+$Rd                 d,d$                accept d
+$R                  ,d$                 R -> ,V             
+$V,                 ,d$                 accept ,
+$V                  d$                  V -> dR             
+$Rd                 d$                  accept d
+$R                  $                   R -> #              
+$                   $                   accept $
+accept all successfully

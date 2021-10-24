@@ -1,0 +1,67 @@
+First Set
+A  i n 
+B  ( 
+E  ( i n 
+L  ( i n 
+M  # ( i n 
+
+Follow Set
+A  $ ( ) i n 
+B  $ ( ) i n 
+E  $ ( ) i n 
+L  ) 
+M  ) 
+
+Predict Analysis Table
+        (              )              i              n              $              
+E       E -> B                        E -> A         E -> A                        
+A                                     A -> i         A -> n                        
+B       B -> (L)                                                                   
+L       L -> EM                       L -> EM        L -> EM                       
+M       M -> EM        M -> #         M -> EM        M -> EM                       
+
+Please enter the symbols:
+(i(i(n))(i))
+
+Stack               Input               Output              
+$E                  (i(i(n))(i))$       E -> B              
+$B                  (i(i(n))(i))$       B -> (L)            
+$)L(                (i(i(n))(i))$       accept (
+$)L                 i(i(n))(i))$        L -> EM             
+$)ME                i(i(n))(i))$        E -> A              
+$)MA                i(i(n))(i))$        A -> i              
+$)Mi                i(i(n))(i))$        accept i
+$)M                 (i(n))(i))$         M -> EM             
+$)ME                (i(n))(i))$         E -> B              
+$)MB                (i(n))(i))$         B -> (L)            
+$)M)L(              (i(n))(i))$         accept (
+$)M)L               i(n))(i))$          L -> EM             
+$)M)ME              i(n))(i))$          E -> A              
+$)M)MA              i(n))(i))$          A -> i              
+$)M)Mi              i(n))(i))$          accept i
+$)M)M               (n))(i))$           M -> EM             
+$)M)ME              (n))(i))$           E -> B              
+$)M)MB              (n))(i))$           B -> (L)            
+$)M)M)L(            (n))(i))$           accept (
+$)M)M)L             n))(i))$            L -> EM             
+$)M)M)ME            n))(i))$            E -> A              
+$)M)M)MA            n))(i))$            A -> n              
+$)M)M)Mn            n))(i))$            accept n
+$)M)M)M             ))(i))$             M -> #              
+$)M)M)              ))(i))$             accept )
+$)M)M               )(i))$              M -> #              
+$)M)                )(i))$              accept )
+$)M                 (i))$               M -> EM             
+$)ME                (i))$               E -> B              
+$)MB                (i))$               B -> (L)            
+$)M)L(              (i))$               accept (
+$)M)L               i))$                L -> EM             
+$)M)ME              i))$                E -> A              
+$)M)MA              i))$                A -> i              
+$)M)Mi              i))$                accept i
+$)M)M               ))$                 M -> #              
+$)M)                ))$                 accept )
+$)M                 )$                  M -> #              
+$)                  )$                  accept )
+$                   $                   accept $
+accept all successfully
