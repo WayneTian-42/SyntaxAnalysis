@@ -11,40 +11,41 @@ class Praser
 {
 public:
     void readFromFile(const std::string &fileName); // 从文件中获取文法
-    void caculateFirstSet();
-    void caculaleFollowSet();
+    void caculateFirstSet(); // 计算FIRST集
+    void caculaleFollowSet(); // 计算FOLLOW集
     void generatePredictTable(); // 构造预测分析表
-    void predictAnalysis(const std::string &input);
-    void test();
+    void predictAnalysis(const std::string &input); // 进行预测分析
 
 private:
-    void getFirstSet(const char non);
-    void getFollowSet(const char non);
-    inline std::string cutStr(const std::string &str, int pos);
+    void getFirstSet(const char non); // 得到指定非终结符的FIRST集
+    void getFollowSet(const char non); // 得到指定非终结符的FOLLOW集
+    inline std::string cutStr(const std::string &str, int pos); // 对字符串进行切片, 便于从指定位置开始输出
 
 private:
     char start; // 文法开始符号
-    std::set<char> terminal, nonterminal;
-    std::unordered_map<char, std::set<char>> first, follow, preFollow;
-    std::unordered_map<char, std::vector<std::string>> grammar;
-    std::vector<std::vector<std::string>> predictTable;
-    std::unordered_map<char, int> symbol;
+    std::set<char> terminal, nonterminal; // 终结符与非终结符
+    std::unordered_map<char, std::set<char>> first, follow, preFollow; // first集, follow集, 构造follow集的准备
+    std::unordered_map<char, std::vector<std::string>> grammar; // 文法
+    std::vector<std::vector<std::string>> predictTable; // 预测分析表
+    std::unordered_map<char, int> symbol; // 符号与数字相对应, 便于输出
 };
 
 int main(int argc, char *argv[])
 {
     if (argc != 2)
         std::runtime_error("Error: Need 2 parameters\n");
-    Praser p;
-    p.readFromFile(argv[1]);
-    p.caculateFirstSet();
-    p.caculaleFollowSet();
-    p.generatePredictTable();
+    Praser praser;
+    praser.readFromFile(argv[1]);
+    praser.caculateFirstSet();
+    praser.caculaleFollowSet();
+    praser.generatePredictTable();
 
     std::string input;
     std::cout << "Please enter the symbols:" << std::endl;
     std::cin >> input;
-    p.predictAnalysis(input);
+    praser.predictAnalysis(input);
+
+    return 0;
 }
 
 void Praser::readFromFile(const std::string &fileName)
@@ -77,6 +78,7 @@ void Praser::readFromFile(const std::string &fileName)
                 grammar[generator[0]].push_back(gra);
         }
     }
+    fileIn.close(); // 关闭文件
     // 添加终结符
     for (char alpha : allSymbol)
     {
@@ -273,8 +275,8 @@ void Praser::predictAnalysis(const std::string &input)
     stk.push(start);
     int ptr = 0;
 
-    std::cout << "\n" << std::setw(15) << std::left << "Stack" << std::setw(15) << std::left << "Input"
-              << std::setw(15) << std::left << "Output" << std::endl;
+    std::cout << "\n" << std::setw(20) << std::left << "Stack" << std::setw(20) << std::left << "Input"
+              << std::setw(20) << std::left << "Output" << std::endl;
     while (!stk.empty())
     {
         char snow = stk.top(), inow = target[ptr];
@@ -283,9 +285,9 @@ void Praser::predictAnalysis(const std::string &input)
             if (snow == inow)
             {
                 stk.pop();
-                std::cout << std::setw(15) << std::left << analysisStk;
+                std::cout << std::setw(20) << std::left << analysisStk;
                 analysisStk.pop_back();
-                std::cout << std::setw(15) << std::left << cutStr(target, ptr);
+                std::cout << std::setw(20) << std::left << cutStr(target, ptr);
                 ptr++;
                 std::cout << "accept " << snow << std::endl;
             }
@@ -302,7 +304,7 @@ void Praser::predictAnalysis(const std::string &input)
             if (!predictTable[symbol[snow]][symbol[inow]].empty())
             {
                 stk.pop();
-                std::cout << std::setw(15) << std::left << analysisStk;
+                std::cout << std::setw(20) << std::left << analysisStk;
                 analysisStk.pop_back();
                 std::string tmp = predictTable[symbol[snow]][symbol[inow]];
                 for (int i = tmp.size() - 1; i >= 5; i--)
@@ -311,8 +313,8 @@ void Praser::predictAnalysis(const std::string &input)
                     if (tmp[i] != '#')
                         analysisStk += tmp[i];
                 }
-                std::cout << std::setw(15) << std::left << cutStr(target, ptr);
-                std::cout << std::setw(15) << std::left << tmp << std::endl;
+                std::cout << std::setw(20) << std::left << cutStr(target, ptr);
+                std::cout << std::setw(20) << std::left << tmp << std::endl;
             }
             else
             {
