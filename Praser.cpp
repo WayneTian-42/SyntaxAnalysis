@@ -263,6 +263,15 @@ void Praser::generatePredictTable()
         std::cout << std::endl;
     }
     std::cout << std::endl;
+    // 添加synch信息
+    for (char non : nonterminal)
+    {
+        for (char alpha : follow[non])
+        {
+            if (predictTable[symbol[non]][symbol[alpha]].empty())
+                predictTable[symbol[non]][symbol[alpha]] = "synch";
+        }
+    }
 }
 
 void Praser::predictAnalysis(const std::string &input)
@@ -274,12 +283,14 @@ void Praser::predictAnalysis(const std::string &input)
     stk.push('$');
     stk.push(start);
     int ptr = 0;
+    bool error = false;
 
     std::cout << "\n" << std::setw(20) << std::left << "Stack" << std::setw(20) << std::left << "Input"
               << std::setw(20) << std::left << "Output" << std::endl;
     while (!stk.empty())
     {
         char snow = stk.top(), inow = target[ptr];
+
         if (terminal.find(snow) != terminal.end() || snow == '$')
         {
             if (snow == inow)
@@ -295,6 +306,10 @@ void Praser::predictAnalysis(const std::string &input)
                 stk.pop();
             else
             {
+                stk.pop();
+                std::cout << std::setw(20) << std::left << analysisStk;
+                analysisStk.pop_back();
+                std::cout << std::setw(20) << std::left << cutStr(target, ptr);
                 std::cout << "error " << snow << " " << inow << std::endl;
                 return;
             }
@@ -306,6 +321,14 @@ void Praser::predictAnalysis(const std::string &input)
                 stk.pop();
                 std::cout << std::setw(20) << std::left << analysisStk;
                 analysisStk.pop_back();
+                if (predictTable[symbol[snow]][symbol[inow]] == "synch")
+                {
+                    if (!error)
+                        error = true;    
+                    std::cout << std::setw(20) << std::left << cutStr(target, ptr);
+                    std::cout << "error detect: pop out " << snow << std::endl;
+                    continue;
+                }
                 std::string tmp = predictTable[symbol[snow]][symbol[inow]];
                 for (int i = tmp.size() - 1; i >= 5; i--)
                 {
@@ -318,12 +341,19 @@ void Praser::predictAnalysis(const std::string &input)
             }
             else
             {
-                std::cout << "error " << snow << " " << inow << std::endl;
-                return;
+                if (!error)
+                    error = true;    
+                std::cout << std::setw(20) << std::left << analysisStk;
+                std::cout << std::setw(20) << std::left << cutStr(target, ptr);
+                std::cout << "error detect: point++" << std::endl;
+                ptr++;
             }
         }
     }
-    std::cout << "accept all successfully\n";
+    if (!error)
+        std::cout << "No error: accept all successfully\n";
+    else
+        std::cout << "Error detect but accept\n";
 }
 
 inline std::string Praser::cutStr(const std::string &str, int pos)

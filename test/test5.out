@@ -1,0 +1,41 @@
+First Set
+A  # + 
+B  # , 
+S  ( a 
+T  ( a 
+
+Follow Set
+A  $ ) , 
+B  ) 
+S  $ ) , 
+T  ) 
+
+Predict Analysis Table
+        (              )              +              ,              a              $              
+S       S -> (T)                                                    S -> aA                       
+A                      A -> #         A -> +S        A -> #                        A -> #         
+T       T -> SB                                                     T -> SB                       
+B                      B -> #                        B -> ,SB                                     
+
+Please enter the symbols:
+a+(a,a))
+
+Stack               Input               Output              
+$S                  a+(a,a))$           S -> aA             
+$Aa                 a+(a,a))$           accept a
+$A                  +(a,a))$            A -> +S             
+$S+                 +(a,a))$            accept +
+$S                  (a,a))$             S -> (T)            
+$)T(                (a,a))$             accept (
+$)T                 a,a))$              T -> SB             
+$)BS                a,a))$              S -> aA             
+$)BAa               a,a))$              accept a
+$)BA                ,a))$               A -> #              
+$)B                 ,a))$               B -> ,SB            
+$)BS,               ,a))$               accept ,
+$)BS                a))$                S -> aA             
+$)BAa               a))$                accept a
+$)BA                ))$                 A -> #              
+$)B                 ))$                 B -> #              
+$)                  ))$                 accept )
+$                   )$                  error $ )
