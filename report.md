@@ -1,12 +1,12 @@
 <center><font size = 10><b> 语法分析实现报告 </font></center></b>
 
 </br>
-<font size = 5>班级：2019211307 &emsp; &emsp; &emsp; &emsp;  姓名：田文阳 &emsp; &emsp; &emsp; 学号：2019211438</font>
+<font size = 4>班级：2019211307 &emsp; &emsp; &emsp; &emsp;  姓名：田文阳 &emsp; &emsp; &emsp; 学号：2019211438</font>
 </br>
 
 # 1 实验内容
 
-编写语法分析程序，计算出LL(1)文法的FIRST、FOLLOW集，然后构造预测分析表，最后根据该表进行非递归预测分析，输出结果
+编写语法分析程序，计算出LL(1)文法的FIRST、FOLLOW集，然后构造预测分析表，最后根据该表进行非递归预测分析，并且可以执行一定的错误处理，输出结果
 
 # 2 开发环境
 
@@ -27,6 +27,26 @@ predictAnalysis=>operation: predictAnalysis
 
 start->first->follow->predictTable->predictAnalysis
 ```
+
+## 3.1 构造FIRST集
+
+![](assets/first.jpeg)
+
+## 3.2 构造FOLLOW集
+
+![](assets/follow.jpeg)
+
+## 3.3 构造预测分析表
+
+![](assets/predictTable.jpeg)
+
+## 3.4 进行预测分析
+
+![](assets/predict.jpeg)
+
+## 3.5 错误处理
+
+![](assets/error1.jpeg) ![](assets/error2.jpeg)
 
 # 4 代码实现
 
@@ -88,16 +108,16 @@ int main(int argc, char *argv[])
 }
 ```
 
-# 测试
+# 5 测试
 
-## 测试说明
+## 5.1 测试说明
 
 本实验所需输入为文法产生式，以及所要分析的符号串，其中$\varepsilon$以符号`#`来代替，输出为FIRST集、FOLLOW集，预测分析表，以及分析过程中栈、输入和输出
 
 Linux环境下：输入`./Praser test/test0.in`，然后根据提示输入符号串</br>
 Windows环境下：输入
 
-## 测试样例一：书上P141给出文法
+## 5.2 测试样例一：书上P141给出文法
 
 该文法在`test/test0.in`中，首先输入文件名
 ![运行截图](assets/screenShot0.png)
@@ -107,3 +127,18 @@ Windows环境下：输入
 
 ![运行截图](assets/screenShot1.png)
 ![运行截图](assets/screenShot2.png)
+
+## 5.3 测试样例二：书上P94给出错误处理样例
+
+该文法在`test/test4.in`中，输入文件名
+
+![运行截图](assets/in4.png)
+
+然后输入符号串
+`*i*+i`
+
+![运行截图](assets/out4.png)
+
+# 6 实验心得
+
+本次实验相对于第一次词法分析的实验简单一点，只需根据书上的算法进行实现即可。并且利用了C++的封装好的容器，如`set`,`map`等。通过本次实验，对语法分析的流程掌握更加透彻。改进方面可以尝试代码实现消除左递归及提取左公因子。
